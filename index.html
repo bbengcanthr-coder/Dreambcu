@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Paralysis | รอยต่อแห่งความฝัน</title>
+    <!-- ใช้ฟอนต์ Prompt ซึ่งเป็นฟอนต์ไม่มีหัว ดูทันสมัยและเย็นชา -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --text-dim: #888888;
+            --text-light: #e0e0e0;
+            --blood-red: #660000;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Prompt', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* เอฟเฟกต์นอยส์แบบละเอียด */
+        .static-noise {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url('https://www.transparenttextures.com/patterns/black-paper.png');
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .fade-in {
+            animation: fadeIn 3s ease-in forwards;
+        }
+
+        .fade-out {
+            animation: fadeOut 2s ease-out forwards;
+        }
+
+        h1 {
+            font-weight: 200;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .intro-text {
+            font-weight: 300;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 50px;
+        }
+
+        .choice-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: var(--text-dim);
+            font-family: 'Prompt', sans-serif;
+            font-weight: 300;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn.btn-red:hover {
+            border-color: var(--blood-red);
+            color: var(--blood-red);
+            box-shadow: 0 0 20px rgba(102, 0, 0, 0.5);
+        }
+
+        /* หน้าจอกำลังโหลดความฝัน */
+        #loading-screen {
+            display: none;
+            font-weight: 200;
+            letter-spacing: 3px;
+            color: var(--blood-red);
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        /* หน้าจอผลลัพธ์ */
+        #result-screen {
+            display: none;
+            text-align: left;
+            opacity: 0;
+        }
+
+        .dream-content {
+            font-weight: 300;
+            font-size: 1.15rem;
+            line-height: 2;
+            color: #cccccc;
+            margin-bottom: 40px;
+            text-align: justify;
+        }
+
+        .dream-content p {
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            display: block;
+            margin: 0 auto;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            transition: color 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        @media (max-width: 600px) {
+            .choice-container { flex-direction: column; gap: 15px; }
+            #game-container { padding: 20px; }
+            h1 { font-size: 1.5rem; }
+            .dream-content { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="static-noise"></div>
+
+    <div id="game-container" class="fade-in">
+        <div id="intro-screen">
+            <h1>คืนวันที่ ๑๒ พฤษภาคม...</h1>
+            <div class="intro-text">
+                พรุ่งนี้คือ "วันฉิมประดิษฐ์" กลิ่นดอกไม้สดผสมกลิ่นธูปหอมเย็นลอยแว่วมาจากตึกสถาปัตย์<br>
+                ความเหนื่อยล้าจากงานเตรียมพิธีทำให้เปลือกตาของคุณหนักอึ้ง<br>
+                คุณล้มตัวลงบนเตียงในหอพักเบงจันทร์... นาฬิกาบอกเวลาเกือบเที่ยงคืน<br><br>
+                คุณเลือกที่จะ...
+            </div>
+            <div class="choice-container">
+                <button class="btn" onclick="chooseDream(false)">ฝืนลืมตา (ไม่ฝัน)</button>
+                <button class="btn btn-red" onclick="chooseDream(true)">หลับตาลง (ยอมฝัน)</button>
+            </div>
+        </div>
+
+        <div id="loading-screen">
+            ...กำลังดำดิ่งสู่ห้วงนิทรา...
+        </div>
+
+        <div id="result-screen">
+            <div id="dream-text" class="dream-content"></div>
+            <button class="restart-btn" onclick="resetGame()">[ ตื่นขึ้นมา ]</button>
+        </div>
+    </div>
+
+    <script>
+        const dreams = [
+            "คุณลืมตาขึ้นมาในโถงทางเดินของคณะสถาปัตย์ รอบตัวเต็มไปด้วยพานพุ่มดอกไม้สดที่เตรียมไว้สำหรับงานฉิมประดิษฐ์ แต่ยิ่งคุณเดินลึกเข้าไป กลิ่นหอมก็เริ่มเปลี่ยนเป็นกลิ่นคาวเลือด คุณก้มลงมองพานพุ่มที่อยู่ใกล้ที่สุด ดอกรักและดอกดาวเรืองเหล่านั้นไม่ได้ถูกร้อยด้วยด้าย... แต่ถูกร้อยด้วยเส้นเลือดดำที่ยังคงเต้นตุบๆ ทันใดนั้น มือที่ซีดเซียวของใครบางคนก็เอื้อมมาจากใต้โต๊ะ จับข้อเท้าคุณไว้แน่น พร้อมเสียงกระซิบข้างหูว่า 'ร้อยให้เสร็จ... หรือจะให้กูใช้ตาของมึงแทนดอกไม้' ",
+            
+            "คุณฝันว่าตัวเองกำลังยืนอยู่บนยอดโดมมหาวิทยาลัยสิบศิลป์สิริศาสตร์ ท้องฟ้ามืดมิดไร้ดาว ฝนกำลังจะตก คุณเห็นแผ่นหลังของ 'ศิษย์เอก' กำลังรำไล่ฝนอยู่ตรงหน้า ท่วงท่าของเขาช่างงดงามและอ่อนช้อยจนน่าขนลุก... กระทั่งเขาค่อยๆ หันหน้ามาหาคุณ คอของเขาหมุนกลับหลัง 180 องศา ใบหน้านั้นเรียบเนียนไม่มีดวงตา ไม่มีจมูก ไม่มีปาก มีเพียงรอยยิ้มที่ถูกกรีดด้วยของมีคมจรดใบหู ร่างนั้นไม่เดิน แต่กลับค่อยๆ ลอยคืบคลานเข้ามาหาคุณ พร้อมเสียงกระดูกที่บิดหักดังก้องไปทั้งดาดฟ้า",
+            
+            "ในฝัน คุณสวมชุดไทยโบราณสมัยอยุธยา นั่งพับเพียบอยู่หน้ากระจกบานใหญ่ เตรียมตัวสำหรับขบวนแห่ฉิมประดิษฐ์ แต่ภาพสะท้อนในกระจกกลับไม่ได้ขยับตามคุณ ร่างในกระจกค่อยๆ ยกมือขึ้นสางผมที่เปียกชุ่มด้วยโคลนสีแดง คุณพยายามจะลุกหนี แต่ร่างกายกลับขยับไม่ได้เหมือนโดนผีอำ ร่างในกระจกค่อยๆ ชะโงกหน้าทะลุกระจกออกมา หยดน้ำโคลนสีแดงตกลงบนตักของคุณ มันแสยะยิ้มและพูดด้วยราชาศัพท์โบราณว่า 'ถึงเวลาเปลี่ยนตัวแล้ว... เจ้าจงเข้าไปอยู่ในนั้นแทนข้า' ",
+            
+            "คุณตื่นขึ้นมากลางดึกในห้องพักของตัวเอง ทุกอย่างดูปกติจนกระทั่งคุณได้ยินเสียงกลอนแปดถูกท่องด้วยน้ำเสียงแหบพร่าดังก้องมาจากใต้เตียง 'มาลัยร้อย ร้อยรัด มัดวิญญาณ... บูชาจารย์ ด้วยเลือดเนื้อ และหยาดเหงื่อ...' คุณกลั้นหายใจ ไม่กล้าแม้แต่จะขยับตัว ทันใดนั้น ปลายเตียงของคุณก็ยุบลงเหมือนมีคนขึ้นมานั่งช้าๆ ความเย็นเฉียบแผ่ซ่านขึ้นมาถึงปลายเท้า เสียงท่องกลอนหยุดลง ก่อนที่เสียงแหบพร่านั้นจะดังขึ้นที่ข้างหูของคุณ... 'แต่งวรรคต่อไปให้กูสิ' ",
+            
+            "คุณกำลังเดินอยู่ในขบวนแห่ฉิมประดิษฐ์ ทุกคนรอบตัวสวมหน้ากากโขนสีขาวไร้ลวดลาย เดินกันอย่างเงียบเชียบ ไม่มีเสียงดนตรี มีเพียงเสียงฝีเท้าที่ย่ำลงบนพื้นดินแฉะๆ คุณก้มมองดูเท้าตัวเองและพบว่าคุณไม่ได้สวมรองเท้า และพื้นดินที่คุณเหยียบอยู่ก็เต็มไปด้วยโคลนสีแดงของป่าช้าเก่า คุณพยายามจะวิ่งหนี แต่คนในขบวนแห่ทั้งหมดก็หันขวับมามองคุณพร้อมกัน หน้ากากสีขาวของพวกเขาเริ่มมีเลือดซึมออกมาจากตำแหน่งดวงตา... พวกเขาเดินล้อมกรอบเข้ามาหาคุณช้าๆ",
+            
+            "คุณถูกขังอยู่ในห้องหอพ่อแก่ของคณะนาฏศิลป์ของสิบศิลป์ ประตูถูกล็อคจากด้านใน รูปปั้นเศียรครูทุกเศียรบนหิ้งค่อยๆ หันหน้ามาทางคุณอย่างช้าๆ เสียงดนตรีปี่พาทย์บรรเลงขึ้นเองในความมืด เป็นจังหวะที่ผิดเพี้ยนและเร็วขึ้นเรื่อยๆ จนบาดหู คุณปิดหูแน่นและหลับตา แต่เมื่อลืมตาขึ้นมาอีกครั้ง คุณพบว่าตัวเองไม่ได้อยู่บนพื้นห้อง... แต่ร่างของคุณกำลังลอยอยู่กลางอากาศ แขนและขาถูกเชิดด้วยเส้นด้ายที่มองไม่เห็น คุณกำลังถูกบังคับให้รำถวาย... โดยที่คุณควบคุมตัวเองไม่ได้เลย",
+            
+            "คุณฝันเห็น 'หัวโขน' ยืนตระหง่านอยู่หน้าตึกคณะ ในมือถือพานบายศรีที่ทำจากชิ้นส่วนของมนุษย์ ท่านชี้หน้าคุณและเอ่ยด้วยน้ำเสียงกึกก้องว่า 'พิธีไล่ฝนของพวกมึงล้มเหลว' ทันใดนั้น ฝนสีดำสนิทก็ตกลงมาจากฟ้า เมื่อหยดน้ำฝนสัมผัสผิวหนัง มันไม่ได้ทำให้เปียก แต่กลับกัดกร่อนเนื้อของคุณจนเห็นกระดูก คุณพยายามวิ่งหาที่หลบฝน แต่ประตูตึกทุกบานกลับเลือนหายไปกลายเป็นกำแพงทึบ คุณได้แต่นั่งกรีดร้องอยู่กลางสายฝนที่กำลังละลายร่างของคุณทีละน้อย",
+            
+            "คุณตื่นขึ้นมาในเวลา 7 โมงเช้า เพื่อไปดูพิธี 'รำชำระ' ท้องฟ้าสว่างไสว แต่อากาศกลับหนาวเย็นจนสั่น นางรำหลายสิบคนร่ายรำอย่างพร้อมเพรียง แต่มีบางอย่างผิดปกติ... ไม่มีใครมีเงาทอดลงบนพื้นเลย คุณหยิบโทรศัพท์ขึ้นมาจะถ่ายรูป แต่เมื่อมองผ่านหน้าจอมือถือ ลานกว้างที่ควรจะมีนางรำ กลับว่างเปล่า มีเพียงซากศพแห้งกรังนับสิบสวมชุดไทยยืนแข็งทื่ออยู่ และเมื่อคุณละสายตาจากหน้าจอมือถือ... นางรำทั้งหมดก็หยุดรำ และพุ่งตัวเข้ามาหาคุณด้วยความเร็วที่ตามนุษย์มองไม่ทัน",
+            
+            "ในความฝัน คุณรู้สึกอึดอัดและหายใจไม่ออก รอบตัวมืดมิดและแคบมาก กลิ่นของดอกกล้วยไม้เน่าฟุ้งกระจาย คุณพยายามเอามือคลำไปรอบๆ และพบว่าตัวเองถูกขังอยู่ในกล่องไม้สี่เหลี่ยม เสียงสวดมนต์บทแปลกประหลาดดังแว่วมาจากด้านนอก ตามด้วยเสียงกลองตะโพน คุณเพิ่งตระหนักได้ว่า คุณไม่ได้กำลังนอนอยู่บนเตียง... แต่คุณกำลังถูกนำไปแห่เป็น 'เครื่องเซ่น' ซ่อนอยู่ใจกลางรถบุปผชาติในงานฉิมประดิษฐ์ และตอนนี้ รถกำลังเคลื่อนเข้าสู่เตาเผา...",
+            
+            "คุณนั่งอยู่ในห้องเรียนคณะสถาปัตย์ตอนเที่ยงคืน ไฟกระพริบติดๆ ดับๆ ชายหนุ่มรูปร่างสูงโปร่งยืนหันหลังให้คุณอยู่ที่หน้ากระดาน เขาเขียนชื่อ 'สิบศิลป์' ซ้ำๆ จนเต็มกระดาน ก่อนจะหันมาหาคุณ ใบหน้าของเขาคือใบหน้าของคุณเอง! แต่ดวงตากลวงโบ๋ไม่มีลูกตา เขาง้างปากออกกว้างจนกรามหลุด ดินสีแดงสดไหลทะลักออกจากปากของเขาเหมือนน้ำตก ท่วมพื้นห้องอย่างรวดเร็ว คุณพยายามว่ายตะเกียกตะกายในบ่อโคลนสีแดงนั้น แต่มือของเขาก็กดหัวคุณจมลงไป... จมลงไป..."
+        ];
+
+        function chooseDream(isDreaming) {
+            const intro = document.getElementById('intro-screen');
+            const loading = document.getElementById('loading-screen');
+            const result = document.getElementById('result-screen');
+            const dreamText = document.getElementById('dream-text');
+
+            // Fade out intro
+            intro.classList.add('fade-out');
+            
+            setTimeout(() => {
+                intro.style.display = 'none';
+                intro.classList.remove('fade-out');
+
+                if (!isDreaming) {
+                    // หากเลือกไม่ฝัน
+                    document.body.style.backgroundColor = "#000";
+                    dreamText.innerHTML = "<p style='text-align:center; color: #555; font-size: 1.5rem; letter-spacing: 5px;'>คุณลืมตาโพลงท่ามกลางความมืดมิด...<br><br>ไม่มีความฝันใดๆ คุกคามคุณ...<br><br>แต่คุณแน่ใจหรือ... ว่าสิ่งที่ยืนอยู่ปลายเตียงตอนนี้<br>คือความจริง หรือ ความฝัน?</p>";
+                    result.style.display = 'block';
+                    result.style.opacity = 1;
+                } else {
+                    // หากเลือกฝัน (สุ่มเนื้อเรื่อง)
+                    loading.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        const randomIndex = Math.floor(Math.random() * dreams.length);
+                        dreamText.innerHTML = "<p>" + dreams[randomIndex] + "</p>";
+                        
+                        result.style.display = 'block';
+                        // Fade in result
+                        let opacity = 0;
+                        let fadeInInterval = setInterval(() => {
+                            if(opacity < 1) {
+                                opacity += 0.05;
+                                result.style.opacity = opacity;
+                            } else {
+                                clearInterval(fadeInInterval);
+                            }
+                        }, 50);
+
+                    }, 3500); // ดีเลย์สร้างความอึดอัด 3.5 วินาที
+                }
+            }, 1800);
+        }
+
+        function resetGame() {
+            const result = document.getElementById('result-screen');
+            const intro = document.getElementById('intro-screen');
+            
+            result.style.opacity = 0;
+            setTimeout(() => {
+                result.style.display = 'none';
+                intro.style.display = 'block';
+                intro.classList.add('fade-in');
+                document.body.style.backgroundColor = "var(--bg-dark)";
+            }, 500);
+        }
+    </script>
+</body>
+</html>
